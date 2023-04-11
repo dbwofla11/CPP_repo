@@ -90,7 +90,7 @@ void Matrix::paste(const Matrix *obj, int top, int left) {
 	  (top + y < dy) && (left + x < dx))
 	array[y + top][x + left] = obj->array[y][x];
       else {
-	cerr << "invalid matrix range";
+	cerr << "invalid matrix range-paste";
 	return NULL;
       }
     }
