@@ -99,7 +99,7 @@ int T0D1[] = { 1, 1, 1, 1, -1 };
 int T0D2[] = { 1, 1, 1, 1, -1 };
 int T0D3[] = { 1, 1, 1, 1, -1 };
 
-// o block
+// ㅗ block
 int T1D0[] = { 0, 1, 0,
                1, 1, 1, 
                0, 0, 0, -1 };
@@ -253,31 +253,31 @@ void drawScreen(Matrix *screen, int wall_depth)
 /******************** Tetris Main Loop ************************/
 /**************************************************************/
 
-#define SCREEN_DY  10
-#define SCREEN_DX  10
+#define SCREEN_DY  16
+#define SCREEN_DX  14
 #define SCREEN_DW  1
 
 #define ARRAY_DY (SCREEN_DY + SCREEN_DW)
 #define ARRAY_DX (SCREEN_DX + 2*SCREEN_DW)
 
 int arrayScreen[ARRAY_DY][ARRAY_DX] = {
-  { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-  { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-  { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-  { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-  { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-  { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-  { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-  { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-  { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-  { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },  
-};
-
-int arrayBlk[3][3] = { // test block 
-  { 0, 1, 0 },
-  { 1, 1, 1 },
-  { 0, 0, 0 },
+  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
+  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
+  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
+  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
+  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
+  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
+  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
+  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
+  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
+  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
+  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
+  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
+  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
+  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
+  { 1,1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1 },  
+  { 1,1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1 }, 
+  { 1,1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1 }, 
 };
 
 int main(int argc, char *argv[]) {
@@ -285,21 +285,32 @@ int main(int argc, char *argv[]) {
   int blkType;
   int top = 0, left = 4;
 
-  Matrix A((int *) arrayBlk,3,3);
-  Matrix B(A);
-  Matrix C(A);
-  Matrix D;
-  D = A + B + C;
-  cout << D << endl;
+  // 랜덤 변수 
+  srand((unsigned int) time(NULL)); // 이 함수는 main 함수에서 최초 1회만 호출할 것
+
+
+  Matrix *setOfBlockObjects[7][4];
+  int rxy = 0;
+  for (int i = 0 ; i < 7 ; i++){
+      for (int k = 0 ; k < 4 ; k++){
+        if (i == 0) rxy = 2;
+        else if (i <= 5 ) rxy = 3;
+        else rxy = 4;
+        
+        setOfBlockObjects[i][k] = new Matrix((int *) setOfBlockArrays[4*i + k] , rxy , rxy);
+      } 
+  }
   
+ 
 
-  srand((unsigned int)time(NULL));
-  blkType = rand() % MAX_BLK_TYPES;
-  cout << "blkType = " << blkType << endl;
-  return 0;
+  blkType = rand() % MAX_BLK_TYPES; // 이 코드는 난수 발생이 필요할 때마다 호출할 것
 
-  Matrix *iScreen = new Matrix((int *) arrayScreen, ARRAY_DY, ARRAY_DX);
-  Matrix *currBlk = new Matrix((int *) arrayBlk, 3, 3);
+
+  // 게임 화면 객체 활당 
+  Matrix *iScreen = new Matrix((int *) arrayScreen, ARRAY_DY, ARRAY_DX); 
+  Matrix *currBlk = new Matrix(setOfBlockObjects[blkType][0]); // 랜덤 테스트 객체 ( 현재 블럭 )
+
+
   Matrix *tempBlk = iScreen->clip(top, left, top + currBlk->get_dy(), left + currBlk->get_dx());
   Matrix *tempBlk2 = tempBlk->add(currBlk);
   delete tempBlk2;
@@ -349,11 +360,24 @@ int main(int argc, char *argv[]) {
     
   }
 
+
+
+
+  // 메모리 할당 해제 
   delete iScreen;
   delete currBlk;
 
+  // for (int i = 0 ; i < 7 ; i++){
+  //   for (int k = 0 ; k < 4 ; k++){
+  //     delete[] setOfBlockObjects[i][k]; 
+  //   }
+  // }
+
   cout << "(nAlloc, nFree) = (" << Matrix::get_nAlloc() << ',' << Matrix::get_nFree() << ")" << endl;  
+    cout << blkType << "ry : " <<  rxy << "rx: " <<  rxy << endl;
   cout << "Program terminated!" << endl;
 
   return 0;
 }
+
+
