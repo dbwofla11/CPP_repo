@@ -227,7 +227,7 @@ void drawScreen(Matrix *screen, int wall_depth)
       if (array[y][x] == 0)
 	      cout << color_normal << "□ ";
       else if (array[y][x] == 1)
-	      cout << color_white << "■ ";
+	      cout << color_red << "■ ";
       else if (array[y][x] == 10)
 	      cout << "◈ ";
       else if (array[y][x] == 20)
@@ -284,7 +284,7 @@ int main(int argc, char *argv[]) {
   // 랜덤 변수 
   srand((unsigned int) time(NULL)); // 이 함수는 main 함수에서 최초 1회만 호출할 것 이라고 함 
 
-
+  // 게임 블럭 객체 활당 
   Matrix *setOfBlockObjects[7][4];
   int rxy = 0;
   for (int i = 0 ; i < 7 ; i++){
@@ -296,11 +296,8 @@ int main(int argc, char *argv[]) {
         setOfBlockObjects[i][k] = new Matrix((int *) setOfBlockArrays[4*i + k] , rxy , rxy);
       } 
   }
-  
+  blkType = rand() % MAX_BLK_TYPES; 
 
-
-
-  blkType = rand() % MAX_BLK_TYPES; // 이 코드는 난수 발생이 필요할 때마다 호출할 것
 
   // 게임 화면 객체 활당 
   Matrix *iScreen = new Matrix((int *) arrayScreen, ARRAY_DY, ARRAY_DX); 
@@ -327,13 +324,37 @@ int main(int argc, char *argv[]) {
           case 'd': left++; break;
           case 's': top++; break;
           case 'w': degree = (degree + 1)%4; break;
-          case ' ': break; // 스페이스 바
+          case ' ': 
+            while(true){
+              top++;
+
+              tempBlk = iScreen -> clip(top , left , top + currBlk->get_dy(), left + currBlk->get_dx()); // 스크린 좌표 따오기
+              currBlk = setOfBlockObjects[blkType][degree]; // 지금 블럭 미리 만든거에서 가져오기
+              tempBlk2 = tempBlk -> add(currBlk); // 임시 블럭 2 = 스크린 + 지금 블럭
+              delete tempBlk; // 위에꺼 지우기 
+              
+
+              if (tempBlk2 -> anyGreaterThan(1)){
+                top--;  
+                
+                
+                break;
+              }  
+              delete tempBlk2;
+            } 
+            delete tempBlk2;
+            cout << top << endl;
+            break; // 스페이스 바
+
           default: cout << "wrong key input" << endl;
         }
     tempBlk = iScreen -> clip(top , left , top + currBlk->get_dy(), left + currBlk->get_dx()); // 스크린 좌표 따오기
     currBlk = setOfBlockObjects[blkType][degree]; // 지금 블럭 미리 만든거에서 가져오기
     tempBlk2 = tempBlk -> add(currBlk); // 임시 블럭 2 = 스크린 + 지금 블럭 
     delete tempBlk;  
+
+
+   
 
 
     if (tempBlk2 -> anyGreaterThan(1)){
@@ -343,7 +364,7 @@ int main(int argc, char *argv[]) {
         case 'd': left--; break;
         case 's': 
           top--;
-          
+
           delete tempBlk2;
           blkType = rand() % MAX_BLK_TYPES;
           
@@ -354,14 +375,13 @@ int main(int argc, char *argv[]) {
           delete tempBlk;
 
           top = 0; left = 4;
-          break;
+          break; // 아래로 내리는 건 다 구현함 
 
         case 'w': degree = (degree - 1)%4; break;  // rotate 
         case ' ': break; 
         default: cout << "wrong key input" << endl;
       }      
       delete tempBlk2; 
-
       currBlk = setOfBlockObjects[blkType][degree];
       tempBlk = iScreen -> clip(top , left , top + currBlk->get_dy(), left + currBlk->get_dx());
       tempBlk2 = tempBlk->add(currBlk);
@@ -369,29 +389,34 @@ int main(int argc, char *argv[]) {
     } // 예외처리 부딫쳤을때 못 움직이는 거 fi
     
 
+
     // std::system("clear");
     cout << endl;
     oScreen = new Matrix(iScreen);  
     oScreen->paste(tempBlk2, top, left); 
     drawScreen(oScreen, SCREEN_DW);
 
-    
+
+    // 게임오버 
+    if (oScreen -> anyGreaterThan(1)){
+      break; 
+    }
     delete oScreen;
-    delete tempBlk2;
-    
+    delete tempBlk2;    
   } // while 문 끝 
 
+
   // 메모리 할당 해제 
-  // delete currBlk;
+  delete oScreen;
+  delete tempBlk2;
   delete iScreen;
   for (int i = 0; i < 7; i++) {
     for (int k = 0; k < 4; k++) {
         delete setOfBlockObjects[i][k];
     }
 }
-
+  cout << "================게임 오버===============" << endl;
   cout << "(nAlloc, nFree) = (" << Matrix::get_nAlloc() << ',' << Matrix::get_nFree() << ")" << endl;  
-  cout << blkType << endl;
   cout << "Program terminated!" << endl;
 
   return 0;
