@@ -231,23 +231,9 @@ void drawScreen(Matrix *screen, int wall_depth)
           cout << color_normal << "■ ";
         }
         else {
-          cout << color_red << "■ ";
+          cout << color_blue << "■ ";
 
         }
-      else if (array[y][x] == 10)
-        cout << "◈ ";
-      else if (array[y][x] == 20)
-        cout << "★ ";
-      else if (array[y][x] == 30)
-        cout << "● ";
-      else if (array[y][x] == 40)
-        cout << "◆ ";
-      else if (array[y][x] == 50)
-        cout << "▲ ";
-      else if (array[y][x] == 60)
-        cout << "♣ ";
-      else if (array[y][x] == 70)
-        cout << "♥ ";
       else
         cout << "X ";
     }
@@ -267,22 +253,48 @@ void drawScreen(Matrix *screen, int wall_depth)
 #define ARRAY_DX (SCREEN_DX + 2*SCREEN_DW)
 
 int arrayScreen[ARRAY_DY][ARRAY_DX] = {
-  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
-  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
-  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
-  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
-  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
-  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
-  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
-  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
-  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
-  { 1,1,1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,1,1 },
-  { 1,1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1 },  
-  { 1,1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1 }, 
-  { 1,1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1 }, 
+  { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
+  { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
+  { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
+  { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
+  { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
+  { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
+  { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
+  { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
+  { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
+  { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
+  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },  
+  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, 
+  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, 
 };
 
 
+void deleteFullLines( Matrix *iScreen ){
+  
+  int deleteLine;
+  Matrix *rowScreen;
+  Matrix *downScreen;
+  Matrix *oneLine = new Matrix(1,10);
+
+  for (int i = 0 ; i < 10 ; i++){
+    rowScreen = iScreen -> clip(i , 3 , i+1 , 13 );
+    // cout << *rowScreen << endl;
+    if (rowScreen -> sum() == 10 ){
+      deleteLine = i;
+
+
+      cout << "Top : " << deleteLine << endl;
+
+      downScreen = iScreen -> clip(0 , 3 , deleteLine , 13);
+      iScreen -> paste(downScreen , 1 , 3);
+      iScreen -> paste(oneLine , 0 , 3);
+      delete downScreen;
+    }
+    delete rowScreen;
+  } // for종료 
+
+  delete oneLine;         
+} 
 
 int main(int argc, char *argv[]) {
   char key;
@@ -324,6 +336,9 @@ int main(int argc, char *argv[]) {
   delete oScreen;
 
 
+
+
+  
  // 게임 진행 루프
   while ((key = getch()) != 'q') {
     
@@ -358,12 +373,8 @@ int main(int argc, char *argv[]) {
     tempBlk2 = tempBlk -> add(currBlk); // 임시 블럭 2 = 스크린 + 지금 블럭 
     delete tempBlk;  
 
-
-   
-
-
     if (tempBlk2 -> anyGreaterThan(1)){
-        cout << "if" << endl;
+
         switch (key) {
         case 'a': left++; break;
         case 'd': left--; break;
@@ -372,17 +383,17 @@ int main(int argc, char *argv[]) {
 
           delete tempBlk2;
           blkType = rand() % MAX_BLK_TYPES;
-          
-          // currBlk = setOfBlockObjects[blkType][degree];
           tempBlk = iScreen -> clip(top , left , top + currBlk->get_dy(), left + currBlk->get_dx());
           tempBlk2 = tempBlk->add(currBlk);
           iScreen -> paste(tempBlk2 , top , left); // 원래 스크린에 붙여넣기 
+          
+          deleteFullLines(iScreen);         
           delete tempBlk;
 
           top = 0; left = 4;
-          break; // 아래로 내리는 건 다 구현함 
+          break; 
 
-        case 'w': degree = (degree - 1)%4; break;  // rotate 
+        case 'w': degree = (degree + 3)%4; break;  // rotate 
         case ' ':
           top--; 
 
@@ -391,6 +402,8 @@ int main(int argc, char *argv[]) {
           tempBlk = iScreen -> clip(top , left , top + currBlk->get_dy(), left + currBlk->get_dx());
           tempBlk2 = tempBlk->add(currBlk);
           iScreen -> paste(tempBlk2 , top , left); // 원래 스크린에 붙여넣기 
+          
+          deleteFullLines(iScreen);
           delete tempBlk;
 
           top = 0; left = 4; 
@@ -404,17 +417,19 @@ int main(int argc, char *argv[]) {
       delete tempBlk; 
     } // 예외처리 부딫쳤을때 못 움직이는 거 fi
     
-
-
     // std::system("clear");
     cout << endl;
     oScreen = new Matrix(iScreen);  
+    
+
     oScreen->paste(tempBlk2, top, left); 
     drawScreen(oScreen, SCREEN_DW);
 
 
     // 게임오버 
     if (oScreen -> anyGreaterThan(1)){
+      delete oScreen;
+      delete tempBlk2;  
       break; 
     }
     delete oScreen;
@@ -423,8 +438,8 @@ int main(int argc, char *argv[]) {
 
 
   // 메모리 할당 해제 
-  delete oScreen;
-  delete tempBlk2;
+  // delete oScreen;
+  // delete tempBlk2;
   delete iScreen;
   for (int i = 0; i < 7; i++) {
     for (int k = 0; k < 4; k++) {
