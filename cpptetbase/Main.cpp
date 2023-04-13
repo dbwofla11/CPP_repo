@@ -225,25 +225,31 @@ void drawScreen(Matrix *screen, int wall_depth)
   for (int y = 0; y < dy - dw + 1; y++) {
     for (int x = dw - 1; x < dx - dw + 1; x++) {
       if (array[y][x] == 0)
-	      cout << color_normal << "□ ";
+        cout << color_normal << "□ ";
       else if (array[y][x] == 1)
-	      cout << color_red << "■ ";
+        if (x >= 3 && x <= 12 && y < 10 ){
+          cout << color_normal << "■ ";
+        }
+        else {
+          cout << color_red << "■ ";
+
+        }
       else if (array[y][x] == 10)
-	      cout << "◈ ";
+        cout << "◈ ";
       else if (array[y][x] == 20)
-	      cout << "★ ";
+        cout << "★ ";
       else if (array[y][x] == 30)
-	      cout << "● ";
+        cout << "● ";
       else if (array[y][x] == 40)
-	      cout << "◆ ";
+        cout << "◆ ";
       else if (array[y][x] == 50)
-	      cout << "▲ ";
+        cout << "▲ ";
       else if (array[y][x] == 60)
-	      cout << "♣ ";
+        cout << "♣ ";
       else if (array[y][x] == 70)
-	      cout << "♥ ";
+        cout << "♥ ";
       else
-	      cout << "X ";
+        cout << "X ";
     }
     cout << endl;
   }
@@ -253,9 +259,9 @@ void drawScreen(Matrix *screen, int wall_depth)
 /******************** Tetris Main Loop ************************/
 /**************************************************************/
 
-#define SCREEN_DY  12
-#define SCREEN_DX  14
-#define SCREEN_DW  1
+#define SCREEN_DY  10//12
+#define SCREEN_DX  10//14
+#define SCREEN_DW  3
 
 #define ARRAY_DY (SCREEN_DY + SCREEN_DW)
 #define ARRAY_DX (SCREEN_DX + 2*SCREEN_DW)
@@ -275,6 +281,8 @@ int arrayScreen[ARRAY_DY][ARRAY_DX] = {
   { 1,1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1 }, 
   { 1,1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1 }, 
 };
+
+
 
 int main(int argc, char *argv[]) {
   char key;
@@ -335,9 +343,6 @@ int main(int argc, char *argv[]) {
               
 
               if (tempBlk2 -> anyGreaterThan(1)){
-                top--;  
-                
-                
                 break;
               }  
               delete tempBlk2;
@@ -378,7 +383,18 @@ int main(int argc, char *argv[]) {
           break; // 아래로 내리는 건 다 구현함 
 
         case 'w': degree = (degree - 1)%4; break;  // rotate 
-        case ' ': break; 
+        case ' ':
+          top--; 
+
+          delete tempBlk2;
+          blkType = rand() % MAX_BLK_TYPES;
+          tempBlk = iScreen -> clip(top , left , top + currBlk->get_dy(), left + currBlk->get_dx());
+          tempBlk2 = tempBlk->add(currBlk);
+          iScreen -> paste(tempBlk2 , top , left); // 원래 스크린에 붙여넣기 
+          delete tempBlk;
+
+          top = 0; left = 4; 
+          break; 
         default: cout << "wrong key input" << endl;
       }      
       delete tempBlk2; 
